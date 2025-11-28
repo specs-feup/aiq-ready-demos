@@ -1,0 +1,10 @@
+dev_data/*
+features_bin/*
+__pycache__
+
+*.csv
+*.txt
+*.zip
+
+benchmark
+gmon.out
