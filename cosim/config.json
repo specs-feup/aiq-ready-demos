@@ -1,0 +1,75 @@
+{
+  "project_name": "nvision_mac",
+  "paths": {
+    "xheep_dir": "/home/usr/x-heep",
+    "output_dir": "/home/usr/socsim-generator/examples"
+  },
+  "simulator_definitions": [
+    {
+      "interface": "xif",
+      "identifier": "nvision_mac",
+      "description": "NVISION MAC Accelerator Co-simulation Module",
+      "class_name": "nvision_mac",
+      "target_language": "cpp",
+      "hardware_interface": {
+        "memory_base_address": 6000,
+        "memory_size_bytes": 100,
+        "registers": [
+          { "name": "rs1_val", "direction_to_simulator": "input", "type": "logic", "signed": false, "width": 32, "default_value": 0, "description": "" },
+          { "name": "rs2_val", "direction_to_simulator": "input", "type": "logic", "signed": false, "width": 32, "default_value": 0, "description": "" },
+          { "name": "instr", "direction_to_simulator": "input", "type": "logic", "signed": false, "width": 32, "default_value": 0, "description": "" },
+          { "name": "result_val", "direction_to_simulator": "output", "type": "logic", "signed": false, "width": 32, "default_value": 0, "description": "" }
+        ]
+      },
+      "custom_instructions": [
+        { "name": "mac_4b",
+          "type": "r",
+          "encoding": { "opcode": "0b0001011", "funct3": "0b000", "funct7": "0b0000000"},
+          "operands": ["rd", "rs1", "rs2", "instr"],
+          "operand_mapping": { "rs1": "rs1_val", "rs2": "rs2_val", "rd": "result_val", "instr": "instr"},
+          "cycles": 1,
+          "memory_access": false
+        },
+        { "name": "mac_8b",
+          "type": "r",
+          "encoding": { "opcode": "0b0001011", "funct3": "0b010", "funct7": "0b0000000"},
+          "operands": ["rd", "rs1", "rs2", "instr"],
+          "operand_mapping": { "rs1": "rs1_val", "rs2": "rs2_val", "rd": "result_val", "instr": "instr"},
+          "cycles": 1,
+          "memory_access": false
+        },
+        { "name": "mac_16b",
+          "type": "r",
+          "encoding": { "opcode": "0b0001011", "funct3": "0b100", "funct7": "0b0000000"},
+          "operands": ["rd", "rs1", "rs2", "instr"],
+          "operand_mapping": { "rs1": "rs1_val", "rs2": "rs2_val", "rd": "result_val", "instr": "instr"},
+          "cycles": 1,
+          "memory_access": false
+        },
+        { "name": "mac_32b",
+          "type": "r",
+          "encoding": { "opcode": "0b0001011", "funct3": "0b110", "funct7": "0b0000000"},
+          "operands": ["rd", "rs1", "rs2", "instr"],
+          "operand_mapping": { "rs1": "rs1_val", "rs2": "rs2_val", "rd": "result_val", "instr": "instr"},
+          "cycles": 1,
+          "memory_access": false
+        },
+        { "name": "read_clear",
+          "type": "r",
+          "encoding": { "opcode": "0b0001011", "funct3": "0b111", "funct7": "0b0000000"},
+          "operands": ["rd", "rs1", "rs2", "instr"],
+          "operand_mapping": { "rs1": "rs1_val", "rs2": "rs2_val", "rd": "result_val", "instr": "instr"},
+          "cycles": 1,
+          "memory_access": false
+        }
+      ],
+      "communication": {
+        "host_address": "tcp://localhost:5556",
+        "simulator_address": "tcp://*:5556",
+        "send_timeout_ms": 5000,
+        "recv_timeout_ms": 5000,
+        "retries": 3
+      }
+    }
+  ]
+}
