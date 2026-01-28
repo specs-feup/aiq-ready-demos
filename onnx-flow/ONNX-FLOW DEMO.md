@@ -7,6 +7,7 @@ This document describes how to install the **ONNX-Flow demo release**, obtain th
 - Run **feature examples**:
   - `add_chain_standard.onnx` / `matmuladd_test.onnx` with and without loop fusion
   - `softmax_standard.onnx` / `avgpool_standard.onnx` with and without loop lowering
+  - `matmul_simple.onnx` with CGRA-oriented decomposition and formatting
 - Run **any ONNX model** with arbitrary settings and optional equivalence checking
 
 ---
