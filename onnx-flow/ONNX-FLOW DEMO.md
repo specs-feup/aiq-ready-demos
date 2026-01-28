@@ -51,7 +51,7 @@ The ONNX models used in the demo are provided separately.
 
 1. Download the archive from Google Drive:
 
-   **Google Drive link:**  
+   **Google Drive link:**
    `https://drive.google.com/drive/folders/17JFcR5ElsBJr9U48uBXiH0VU-k9js0uC?usp=drive_link`
 
 2. Extract the archive. After extraction, you should have:
@@ -188,19 +188,19 @@ onnx-flow <input.onnx> [options]
 
 Key options:
 
-- `--fuse` / `--no-fuse`  
+- `--fuse` / `--no-fuse`
   Enable/disable loop fusion (fuse supported ops into a single Loop).
-- `--coalesce` / `--no-coalesce`  
+- `--coalesce` / `--no-coalesce`
   Enable/disable coalesced scalar MAC for MatMul inside Loop bodies.
-- `--loopLowering` / `--no-loop-lowering`  
+- `--loopLowering` / `--no-loop-lowering`
   Enable/disable loop lowering (explicit Loop nodes vs high-level ops).
-- `--decomposeForCgra`  
+- `--decomposeForCgra`
   Enable CGRA-oriented decomposition.
-- `--formatter default|cgra`  
-  Select DOT formatter (default graph vs CGRA-oriented view).
-- `--checkEquivalence` or `-qe`  
+- `--formatter default|cgra`
+  Select DOT formatter (default graph view vs CGRA-oriented output).
+- `--checkEquivalence` or `-qe`
   Run ONNX Runtime equivalence check using test inputs (when available).
-- `--visualization` or `-vz`  
+- `--visualization` or `-vz`
   Visualization mode:
   - `0` – none
   - `1` – Graphviz online link
@@ -230,7 +230,7 @@ This runs:
 onnx-flow examples/onnx/add_chain_standard.onnx   --no-fuse   --coalesce   --loopLowering   --qe   --vz 0
 ```
 
-Use this to compare behaviour and structure with and without fusion.  
+Use this to compare behaviour and structure with and without fusion.
 The equivalence check confirms that outputs remain identical within tolerance.
 
 #### MatMul+Add: fusion and coalescing enabled
@@ -279,6 +279,16 @@ In each pair, the structural decomposition differs (explicit loops vs higher-lev
 
 ---
 
+### 6.3 Matmul CGRA-oriented decomposition
+
+These examples illustrate CGRA-oriented decomposition and formatting.
+
+```bash
+onnx-flow examples/onnx/matmul_simple.onnx   --decomposeForCgra   --format dot --formatter cgra   --output output.dot   --vz 0
+```
+
+This produces a DOT file (`output.dot`) with CGRA-oriented structure. You can also visualize the structure of the transformed graph in the browser by adding `--vz 1` or `--vz 2`.
+
 ## 7. Running arbitrary models (Q&A mode)
 
 During questions, any ONNX model can be explored with custom settings.
@@ -286,7 +296,7 @@ During questions, any ONNX model can be explored with custom settings.
 General pattern:
 
 ```bash
-onnx-flow path/to/your_model.onnx   --fuse <true|false>   --coalesce <true|false>   --loopLowering <true|false>   --recurse <true|false>   --decomposeForCgra <true|false>   --formatter <default|cgra>   --qe   --vz 0
+onnx-flow path/to/your_model.onnx   --fuse <true|false>   --coalesce <true|false>   --loopLowering <true|false>   --recurse <true|false>   --decomposeForCgra <true|false>   --format <json|dot>   --formatter <default|cgra>   --output <output_file>   --qe <true|false>   --vz 0
 ```
 
 Examples:
@@ -300,7 +310,7 @@ onnx-flow path/to/your_model.onnx   --no-fuse   --no-coalesce   --loopLowering  
 CGRA-oriented decomposition and formatter:
 
 ```bash
-onnx-flow path/to/your_model.onnx   --fuse   --coalesce   --loopLowering   --decomposeForCgra   --formatter cgra   --qe   --vz 0
+onnx-flow path/to/your_model.onnx   --decomposeForCgra   --format dot   --formatter cgra   --output output.dot   --vz 0
 ```
 
 ### Behaviour when no test configuration exists
