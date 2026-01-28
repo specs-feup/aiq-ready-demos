@@ -73,6 +73,9 @@ gprof --version
 ```
 
 Preprocess the dataset data:
+    - Note, we could not find how the preprocessing really occured, so this may be wrong however, the
+    performance of the network, which is what we want to profile, is not affected by this, only the accuracy
+    of the model
 ```
 pip install librosa numpy tqdm
 python3 preprocess.py --data_dir dev_data/ToyCar --out_dir features_bin --train_dir dev_data/ToyCar/train
