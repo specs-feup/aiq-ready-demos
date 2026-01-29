@@ -7,6 +7,7 @@ This document describes how to install the **ONNX-Flow demo release**, obtain th
 - Run **feature examples**:
   - `add_chain_standard.onnx` / `matmuladd_test.onnx` with and without loop fusion
   - `softmax_standard.onnx` / `avgpool_standard.onnx` with and without loop lowering
+  - `matmul_simple.onnx` with CGRA-oriented decomposition and formatting
 - Run **any ONNX model** with arbitrary settings and optional equivalence checking
 
 ---
@@ -45,30 +46,7 @@ onnx-flow-testcomp --help
 
 ---
 
-## 3. Download the example ONNX models
-
-The ONNX models used in the demo are provided separately.
-
-1. Download the archive from Google Drive:
-
-   **Google Drive link:**  
-   `https://drive.google.com/drive/folders/17JFcR5ElsBJr9U48uBXiH0VU-k9js0uC?usp=drive_link`
-
-2. Extract the archive. After extraction, you should have:
-
-   ```text
-   examples/
-     onnx/
-       add_chain_standard.onnx
-       matmuladd_test.onnx
-       softmax_standard.onnx
-       avgpool_standard.onnx
-       … (other models used in tests)
-   ```
-
----
-
-## 4. Prepare the demo environment
+## 3. Prepare the demo environment
 
 The demo assumes the `examples` folder sits in the **same directory** as the installed `onnx-flow` package.
 
@@ -124,9 +102,9 @@ The demo assumes the `examples` folder sits in the **same directory** as the ins
 
 ---
 
-## 5. Running the test suites
+## 4. Running the test suites
 
-### 5.1 Full test suite (“all” set)
+### 4.1 Full test suite (“all” set)
 
 This runs all configured compatibility tests. Each test:
 
@@ -153,7 +131,7 @@ A summary of passed/failed tests and any non-equivalent models is printed at the
 
 ---
 
-### 5.2 Core tests (core set)
+### 4.2 Core tests (core set)
 
 The core set comprises selected tests corresponding to the full models the tool is currently able to decompose end-to-end.
 
@@ -172,7 +150,7 @@ onnx-flow-testcomp
 
 ---
 
-## 6. Feature examples
+## 5. Feature examples
 
 All commands in this section are intended to be run from:
 
@@ -188,19 +166,19 @@ onnx-flow <input.onnx> [options]
 
 Key options:
 
-- `--fuse` / `--no-fuse`  
+- `--fuse` / `--no-fuse`
   Enable/disable loop fusion (fuse supported ops into a single Loop).
-- `--coalesce` / `--no-coalesce`  
+- `--coalesce` / `--no-coalesce`
   Enable/disable coalesced scalar MAC for MatMul inside Loop bodies.
-- `--loopLowering` / `--no-loop-lowering`  
+- `--loopLowering` / `--no-loop-lowering`
   Enable/disable loop lowering (explicit Loop nodes vs high-level ops).
-- `--decomposeForCgra`  
+- `--decomposeForCgra`
   Enable CGRA-oriented decomposition.
-- `--formatter default|cgra`  
-  Select DOT formatter (default graph vs CGRA-oriented view).
-- `--checkEquivalence` or `-qe`  
+- `--formatter default|cgra`
+  Select DOT formatter (default graph view vs CGRA-oriented output).
+- `--checkEquivalence` or `-qe`
   Run ONNX Runtime equivalence check using test inputs (when available).
-- `--visualization` or `-vz`  
+- `--visualization` or `-vz`
   Visualization mode:
   - `0` – none
   - `1` – Graphviz online link
@@ -210,12 +188,12 @@ For scripted demo runs, `--vz 0` is recommended to avoid blocking visualization 
 
 ---
 
-### 6.1 Add chain and MatMul+Add – loop fusion
+### 5.1 Add chain and MatMul+Add – loop fusion
 
 #### Add chain: fusion and coalescing enabled
 
 ```bash
-onnx-flow examples/onnx/add_chain_standard.onnx   --fuse   --coalesce   --loopLowering   --qe   --vz 0
+onnx-flow examples/add_chain_standard.onnx   --fuse   --coalesce   --loopLowering   --qe   --vz 0
 ```
 
 This runs:
@@ -227,66 +205,76 @@ This runs:
 #### Add chain: fusion disabled
 
 ```bash
-onnx-flow examples/onnx/add_chain_standard.onnx   --no-fuse   --coalesce   --loopLowering   --qe   --vz 0
+onnx-flow examples/add_chain_standard.onnx   --no-fuse   --coalesce   --loopLowering   --qe   --vz 0
 ```
 
-Use this to compare behaviour and structure with and without fusion.  
+Use this to compare behaviour and structure with and without fusion.
 The equivalence check confirms that outputs remain identical within tolerance.
 
 #### MatMul+Add: fusion and coalescing enabled
 
 ```bash
-onnx-flow examples/onnx/matmuladd_test.onnx   --fuse   --coalesce   --loopLowering   --qe   --vz 0
+onnx-flow examples/matmuladd_test.onnx   --fuse   --coalesce   --loopLowering   --qe   --vz 0
 ```
 
 Optional comparison with fusion disabled:
 
 ```bash
-onnx-flow examples/onnx/matmuladd_test.onnx   --no-fuse   --coalesce   --loopLowering   --qe   --vz 0
+onnx-flow examples/matmuladd_test.onnx   --no-fuse   --coalesce   --loopLowering   --qe   --vz 0
 ```
 
 ---
 
-### 6.2 Softmax and AvgPool – loop lowering
+### 5.2 Softmax and AvgPool – loop lowering
 
 These examples show the effect of enabling or disabling loop lowering.
 
 #### Softmax: with loop lowering (default behaviour)
 
 ```bash
-onnx-flow examples/onnx/softmax_standard.onnx   --loopLowering   --qe   --vz 0
+onnx-flow examples/softmax_standard.onnx   --loopLowering   --qe   --vz 0
 ```
 
 #### Softmax: without loop lowering
 
 ```bash
-onnx-flow examples/onnx/softmax_standard.onnx   --no-loop-lowering   --qe   --vz 0
+onnx-flow examples/softmax_standard.onnx   --no-loop-lowering   --qe   --vz 0
 ```
 
 #### AvgPool: with loop lowering
 
 ```bash
-onnx-flow examples/onnx/avgpool_standard.onnx   --loopLowering   --qe   --vz 0
+onnx-flow examples/avgpool_standard.onnx   --loopLowering   --qe   --vz 0
 ```
 
 #### AvgPool: without loop lowering
 
 ```bash
-onnx-flow examples/onnx/avgpool_standard.onnx   --no-loop-lowering   --qe   --vz 0
+onnx-flow examples/avgpool_standard.onnx   --no-loop-lowering   --qe   --vz 0
 ```
 
 In each pair, the structural decomposition differs (explicit loops vs higher-level ops) while the equivalence check validates functional correctness.
 
 ---
 
-## 7. Running arbitrary models (Q&A mode)
+### 5.3 Matmul CGRA-oriented decomposition
+
+These examples illustrate CGRA-oriented decomposition and formatting.
+
+```bash
+onnx-flow examples/matmul_simple.onnx   --decomposeForCgra   --format dot --formatter cgra   --output output.dot   --vz 0
+```
+
+This produces a DOT file (`output.dot`) with CGRA-oriented structure. You can also visualize the structure of the transformed graph in the browser by adding `--vz 1` or `--vz 2`.
+
+## 6. Running arbitrary models (Q&A mode)
 
 During questions, any ONNX model can be explored with custom settings.
 
 General pattern:
 
 ```bash
-onnx-flow path/to/your_model.onnx   --fuse <true|false>   --coalesce <true|false>   --loopLowering <true|false>   --recurse <true|false>   --decomposeForCgra <true|false>   --formatter <default|cgra>   --qe   --vz 0
+onnx-flow path/to/your_model.onnx   --fuse <true|false>   --coalesce <true|false>   --loopLowering <true|false>   --recurse <true|false>   --decomposeForCgra <true|false>   --format <json|dot>   --formatter <default|cgra>   --output <output_file>   --qe <true|false>   --vz 0
 ```
 
 Examples:
@@ -300,7 +288,7 @@ onnx-flow path/to/your_model.onnx   --no-fuse   --no-coalesce   --loopLowering  
 CGRA-oriented decomposition and formatter:
 
 ```bash
-onnx-flow path/to/your_model.onnx   --fuse   --coalesce   --loopLowering   --decomposeForCgra   --formatter cgra   --qe   --vz 0
+onnx-flow path/to/your_model.onnx   --decomposeForCgra   --format dot   --formatter cgra   --output output.dot   --vz 0
 ```
 
 ### Behaviour when no test configuration exists
@@ -315,12 +303,12 @@ This makes `--qe` safe to use generically: equivalence is performed when possibl
 
 ---
 
-## 8. Optional: interactive visualization
+## 7. Optional: interactive visualization
 
 For a visual inspection of the decomposed graph:
 
 ```bash
-onnx-flow examples/onnx/add_chain_standard.onnx   --vz 2   --fuse   --coalesce   --loopLowering   --noReconversion
+onnx-flow examples/add_chain_standard.onnx   --vz 2   --fuse   --coalesce   --loopLowering   --noReconversion
 ```
 
 - `--visualization 2` (`-vz 2`) starts a Graphviz HTTP server.
